@@ -1,7 +1,7 @@
 .prev_a {
   color: #62C5E8; }
 
-button {
+button:not(.prev_a) {
   all: unset;
   box-sizing: border-box;
   cursor: pointer; }
@@ -122,12 +122,12 @@ header {
     text-transform: uppercase; }
     header .logo span {
       color: #e2e2e2; }
-    header .logo a, button {
+    header .logo a, .prev_a {
       all: unset;
       cursor: pointer;
       color: #62C5E8;
       font-weight: 600; }
-    header .logo a:hover, button:hover {
+    header .logo a:hover, .prev_a:hover {
       color: #0F9DDD; }
   header .autogrid {
     position: relative; }
@@ -580,7 +580,7 @@ textarea {
     box-shadow: 0 0 6px 2px rgba(0, 0, 0, 0.05);
     border-radius: 5px;
     overflow: hidden;
-    padding: 15px 10px;
+    padding: 15px 18px;
     display: block;
     margin-bottom: 6px; }
   .model-opt .view-opt:hover {

@@ -4,6 +4,8 @@ import React from 'react';
 // general icons
 import ImportIcon from './icons/import_icon'
 import ArrowDownIcon from './icons/arrow_down_icon'
+import ViewModeIcon from './icons/viewmode_icon'
+import ResetIcon from './icons/reset_icon'
 // main renderer icons
 import FaceRenderIcon from './icons/face_render_icon'
 import VertexRenderIcon from './icons/vertex_render_icon'
@@ -46,9 +48,9 @@ class Header extends  React.Component {
         });
 
         return (
-            <div className='autogrid'>
+            <><div className='autogrid'>
                 <HeaderButtonSection>
-                    <HeaderButton>
+                    <HeaderButton id='load-model' tooltip='Load Model'>
                         <ImportIcon/>
                     </HeaderButton>
                 </HeaderButtonSection>
@@ -73,9 +75,15 @@ class Header extends  React.Component {
                     </HeaderList>
                 </HeaderListSection>
                 <HeaderButtonSection>
-
+                    <HeaderButton id='change-view' tooltip='Change View Mode' disabled='disabled'>
+                        <ViewModeIcon/>
+                    </HeaderButton>
+                    <HeaderButton id='reset-view' tooltip='Reset View' disabled='disabled'>
+                        <ResetIcon/>
+                    </HeaderButton>
                 </HeaderButtonSection>
             </div>
+            <Logo/></>
         )
     }
 }
@@ -105,7 +113,12 @@ class HeaderButton extends React.Component {
     render(){
         return(
             <button id={this.props.id}
-                    className={'tooltiped prev_a ' + this.props.type + ' ' +this.props.active}
+                    className={
+                        'tooltiped prev_a ' +
+                        this.props.type + ' ' +
+                        this.props.active + ' ' +
+                        this.props.disabled
+                    }
                     data-tooltip={this.props.tooltip}
                     onClick={() => this.props.click(this.props.id)}>
                 {this.props.children}
@@ -113,6 +126,13 @@ class HeaderButton extends React.Component {
         )
     }
 }
+
+HeaderButton.defaultProps = {
+    active: '',
+    disabled: '',
+    type: '',
+    click:() => console.log('unimplemented')
+};
 
 class HeaderList extends React.Component {
     render(){
@@ -141,5 +161,65 @@ class HeaderListElement extends React.Component {
     }
 }
 
+class Logo extends React.Component {
+    render(){
+        return(
+            <div className="logo flex center">
+                <div>
+                    <h1>S-MESH</h1>
+                    <div className="autogrid center">
+                        <button className="modal-trigger" data-modal="modal-about">About</button>
+                        <span>|</span>
+                        <a href="." target="_blank">GitHub</a>
+                    </div>
+                </div>
+            </div>
+        )
+    }
+}
 
-export default Header
+class ModelView extends React.Component {
+    render(){
+        return(
+            <>
+                <canvas/>
+                <div className="model-opt">
+                    <div className="tooltiped" data-tooltip="Change perspective">
+                        <button className="prev_a view-opt">
+                            <div className="scene">
+                                <div className="cube">
+                                    <div className="face top"/>
+                                    <div className="face left"/>
+                                    <div className="face right"/>
+                                </div>
+                            </div>
+                        </button>
+                    </div>
+                    <div className="zoom">
+                        <i className="material-icons">zoom_in</i>
+                        <input readOnly type="text" value="1.00"/>
+                    </div>
+                </div>
+                <div className="model-stadistics">
+                    <div className="autogrid center">
+                        <div className="coord">
+                            <span>Y: 23 - 9009</span>
+                            <span>X: 23 - 9009</span>
+                            <span>Z: 23 - 9009</span>
+                        </div>
+                        <div className="stadistics">
+                            <span>Vertex: 38.390</span>
+                            <span>•</span>
+                            <span>Planes: 67.820</span>
+                        </div>
+                    </div>
+                </div>
+            </>
+        )
+    }
+}
+
+export {
+    Header,
+    ModelView
+}
