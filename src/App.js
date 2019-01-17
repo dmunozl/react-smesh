@@ -14,15 +14,14 @@ class SMeshApp extends React.Component{
             active_main_render: 'FaceRender',
             active_secondary_renders: []
         };
-        this.update_main_render = this.update_main_render.bind(this);
-        this.update_secondary_renders = this.update_secondary_renders.bind(this)
     }
 
-    update_main_render(render){
+    main_render_handleClick = (render) => {
         this.setState({active_main_render:render});
-    }
+        console.log(render)
+    };
 
-    update_secondary_renders(render){
+    secondary_render_handleChange = (render) => {
         let active_secondary_renders = this.state.active_secondary_renders;
 
         if(active_secondary_renders.includes(render)){
@@ -32,9 +31,9 @@ class SMeshApp extends React.Component{
         }else{
             active_secondary_renders.push(render);
         }
-
         this.setState({active_secondary_renders});
-    }
+        console.log(active_secondary_renders)
+    };
 
     render(){
         return(
@@ -44,8 +43,8 @@ class SMeshApp extends React.Component{
                             secondary_renders={this.state.secondary_renders}
                             active_main_render={this.state.active_main_render}
                             active_secondary_renders={this.state.active_secondary_renders}
-                            update_main_render={this.update_main_render}
-                            update_secondary_renders={this.update_secondary_renders}
+                            main_render_handleClick={this.main_render_handleClick}
+                            secondary_render_handleChange={this.secondary_render_handleChange}
                     />
                 </header>
                 <section id='main-view' className='view1'>

@@ -1,4 +1,5 @@
 import React from 'react';
+import LineNavigator from 'line-navigator';
 
 import {getIconComponent} from "../utils";
 
@@ -9,6 +10,20 @@ import ViewModeIcon from '../icons/viewmode_icon'
 import ResetIcon from '../icons/reset_icon'
 
 class Header extends  React.Component {
+
+    import_handleClick = () => {
+        this.import_input.click();
+        console.log('Import Click')
+    };
+
+    import_handleChange = () => {
+        let navigator = new LineNavigator(this.import_input.files[0]);
+        navigator.readSomeLines(91, (err, index, lines) => {
+            console.log(err);
+            console.log(lines);
+        })
+    };
+
     render(){
         let main_renders = this.props.main_renders.map(render => {
             if(render.key === this.props.active_main_render){
@@ -31,7 +46,11 @@ class Header extends  React.Component {
         return (
             <><div className='autogrid'>
                 <HeaderSection>
-                    <HeaderButton id='load-model' tooltip='Load Model'>
+                    <input hidden ref={input => this.import_input = input} type="file" onChange={this.import_handleChange}/>
+                    <HeaderButton id="load-model"
+                                  tooltip="Load Model"
+                                  handleClick={this.import_handleClick}
+                    >
                         <ImportIcon/>
                     </HeaderButton>
                 </HeaderSection>
@@ -43,7 +62,7 @@ class Header extends  React.Component {
                                       type={render.type}
                                       tooltip={render.tooltip}
                                       active={render.active}
-                                      click={this.props.update_main_render}
+                                      handleClick={this.props.main_render_handleClick}
                         >
                             {getIconComponent(render.key)}
                         </HeaderButton>
@@ -57,7 +76,7 @@ class Header extends  React.Component {
                                                id={render.key}
                                                text={render.text}
                                                checked={render.checked}
-                                               click={this.props.update_secondary_renders}
+                                               handleChange={this.props.secondary_render_handleChange}
                             >
                                 {getIconComponent(render.key)}
                             </HeaderListElement>
@@ -94,7 +113,7 @@ const HeaderButton = (props) => (
                 props.disabled
             }
             data-tooltip={props.tooltip}
-            onClick={() => props.click(props.id)}>
+            onClick={() => props.handleClick(props.id)}>
         {props.children}
     </button>
 );
@@ -103,7 +122,7 @@ HeaderButton.defaultProps = {
     active: '',
     disabled: '',
     type: '',
-    click:() => console.log('unimplemented')
+    handleClick:() => console.log('unimplemented')
 };
 
 
@@ -117,7 +136,7 @@ const HeaderList = (props) => (
 const HeaderListElement = (props) => (
     <li id={props.id}>
         <label className="checkmenu">
-            <input type="checkbox" checked={props.checked} onChange={() => props.click(props.id)}/>
+            <input type="checkbox" checked={props.checked} onChange={() => props.handleChange(props.id)}/>
             <div className="flex label">
                 <span className={'prev_img'}>{props.children}</span>
                 <span>{props.text}</span>
@@ -125,6 +144,10 @@ const HeaderListElement = (props) => (
         </label>
     </li>
 );
+
+HeaderListElement.defaultProps = {
+    handleChange:() => console.log('unimplemented')
+};
 
 const Logo = () => (
     <div className="logo flex center">

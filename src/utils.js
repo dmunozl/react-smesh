@@ -11,7 +11,7 @@ import VertexCloudRenderIcon from './icons/vertexcloud_render_icon'
 import FaceNormalsRenderIcon from './icons/facenormals_render_icon'
 import VertexNormalsRenderIcon from './icons/vertexnormals_render_icon'
 
-const getIconComponent = (key) => {
+export const getIconComponent = (key) => {
     let icon_dict = {
         'FaceRender':<FaceRenderIcon/>,
         'VertexRender':<VertexRenderIcon/>,
@@ -24,7 +24,3 @@ const getIconComponent = (key) => {
     };
     return icon_dict[key]
 };
-
-export {
-    getIconComponent
-}
