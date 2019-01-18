@@ -1,5 +1,4 @@
 import React from 'react';
-import LineNavigator from 'line-navigator';
 
 import {getIconComponent} from "../utils";
 
@@ -10,20 +9,6 @@ import ViewModeIcon from '../icons/viewmode_icon'
 import ResetIcon from '../icons/reset_icon'
 
 class Header extends  React.Component {
-
-    import_handleClick = () => {
-        this.import_input.click();
-        console.log('Import Click')
-    };
-
-    import_handleChange = () => {
-        let navigator = new LineNavigator(this.import_input.files[0]);
-        navigator.readSomeLines(91, (err, index, lines) => {
-            console.log(err);
-            console.log(lines);
-        })
-    };
-
     render(){
         let main_renders = this.props.main_renders.map(render => {
             if(render.key === this.props.active_main_render){
@@ -46,13 +31,13 @@ class Header extends  React.Component {
         return (
             <><div className='autogrid'>
                 <HeaderSection>
-                    <input hidden ref={input => this.import_input = input} type="file" onChange={this.import_handleChange}/>
+                    <input hidden ref={input => this.import_input = input} type="file"
+                           onChange={() => this.props.import_handleChange(this.import_input.files[0])}
+                    />
                     <HeaderButton id="load-model"
                                   tooltip="Load Model"
-                                  handleClick={this.import_handleClick}
-                    >
-                        <ImportIcon/>
-                    </HeaderButton>
+                                  handleClick={() => this.props.import_handleClick(this.import_input)}
+                    ><ImportIcon/></HeaderButton>
                 </HeaderSection>
 
                 <HeaderSection>
@@ -63,9 +48,7 @@ class Header extends  React.Component {
                                       tooltip={render.tooltip}
                                       active={render.active}
                                       handleClick={this.props.main_render_handleClick}
-                        >
-                            {getIconComponent(render.key)}
-                        </HeaderButton>
+                        >{getIconComponent(render.key)}</HeaderButton>
                     )}
                 </HeaderSection>
 
@@ -77,9 +60,7 @@ class Header extends  React.Component {
                                                text={render.text}
                                                checked={render.checked}
                                                handleChange={this.props.secondary_render_handleChange}
-                            >
-                                {getIconComponent(render.key)}
-                            </HeaderListElement>
+                            >{getIconComponent(render.key)}</HeaderListElement>
                         )}
                     </HeaderList>
                 </HeaderSection>

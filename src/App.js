@@ -2,6 +2,7 @@ import React from 'react';
 
 import Header from './components/Header'
 import ModelView from './components/ModelView'
+import {Model} from './cg/Model'
 
 import config from './config'
 
@@ -9,6 +10,7 @@ class SMeshApp extends React.Component{
     constructor(){
         super();
         this.state ={
+            model: undefined,
             main_renders: config.main_renders,
             secondary_renders: config.secondary_renders,
             active_main_render: 'FaceRender',
@@ -35,6 +37,18 @@ class SMeshApp extends React.Component{
         console.log(active_secondary_renders)
     };
 
+    import_handleClick = (import_input) => {
+        import_input.click();
+        console.log('Import Click')
+    };
+
+    import_handleChange = (file) => {
+        if(file) {
+            const model = new Model(file);
+            this.setState({model});
+        }
+    };
+
     render(){
         return(
             <>
@@ -45,6 +59,8 @@ class SMeshApp extends React.Component{
                             active_secondary_renders={this.state.active_secondary_renders}
                             main_render_handleClick={this.main_render_handleClick}
                             secondary_render_handleChange={this.secondary_render_handleChange}
+                            import_handleClick = {this.import_handleClick}
+                            import_handleChange = {this.import_handleChange}
                     />
                 </header>
                 <section id='main-view' className='view1'>
