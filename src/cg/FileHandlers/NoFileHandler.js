@@ -1,10 +1,7 @@
-export default class NoFileHandler{
-    constructor(file){
-        this.file_extension = file.name.split('.').pop();
-        this.file = file;
-    }
+import AbstractFileHandler from "./AbstractFileHandler";
 
-    getModelData(){
-        console.log(`${this.file_extension} extension not supported`)
+export default class NoFileHandler extends AbstractFileHandler{
+    loadData(){
+        this.model.updateStatus('ERROR', `${this.file_extension} extension not supported`);
     }
 }
