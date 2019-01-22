@@ -15,7 +15,9 @@ class SMeshApp extends React.Component{
         this.state ={
             status: 'NORMAL',
             message: 'Everything is fine',
+            gl: undefined,
             model: {},
+            projection: 'Perspective',
             main_renders: config.main_renders,
             secondary_renders: config.secondary_renders,
             active_main_render: 'FaceRender',
@@ -23,11 +25,11 @@ class SMeshApp extends React.Component{
         };
     }
 
-    main_render_handleClick = (render) => {
+    mainRenderHandleClick = (render) => {
         this.setState({active_main_render:render});
     };
 
-    secondary_render_handleChange = (render) => {
+    secondaryRendersHandleChange = (render) => {
         let active_secondary_renders = this.state.active_secondary_renders;
 
         if(active_secondary_renders.includes(render)){
@@ -40,12 +42,12 @@ class SMeshApp extends React.Component{
         this.setState({active_secondary_renders});
     };
 
-    import_handleClick = (import_input) => {
+    importHandleClick = (import_input) => {
         import_input.value = '';
         import_input.click();
     };
 
-    import_handleChange = (file) => {
+    importHandleChange = (file) => {
         if(file) {
             const fileHandler = fileHandlerFactory.getFileHandler(file);
             fileHandler.loadData();
@@ -54,18 +56,32 @@ class SMeshApp extends React.Component{
             const message = model.message;
 
             this.setState({status, message, model});
-            WatchJS.watch(model, 'message', this.on_model_status_change);
+            WatchJS.watch(model, 'message', this.onModelStatusChange);
         }
     };
 
-    on_model_status_change = () => {
+    projectionHandleClick = (projection_button) => {
+        projection_button.classList.toggle('pers');
+        let projection = 'Orthogonal';
+        if (projection_button.classList.contains('pers')) {
+            projection = 'Perspective';
+        }
+        this.setState({projection});
+    };
+
+    onModelStatusChange = () => {
         if (this.state.status === this.state.model.status && this.state.message === this.state.model.message) return;
         const status = this.state.model.status;
         const message = this.state.model.message;
         this.setState({status, message});
     };
 
-    clean_app = () => {
+    onCanvasMount = (canvas) => {
+        const gl = canvas.getContext("webgl2");
+        this.setState({gl});
+    };
+
+    cleanApp = () => {
         const status = 'NORMAL';
         const model = {};
         this.setState({status, model});
@@ -78,23 +94,23 @@ class SMeshApp extends React.Component{
         if(this.state.status === 'ERROR') errorModal_hide='';
 
         return(
-            <>
+            <React.Fragment>
                 <header>
                     <Header main_renders={this.state.main_renders}
                             secondary_renders={this.state.secondary_renders}
                             active_main_render={this.state.active_main_render}
                             active_secondary_renders={this.state.active_secondary_renders}
-                            main_render_handleClick={this.main_render_handleClick}
-                            secondary_render_handleChange={this.secondary_render_handleChange}
-                            import_handleClick = {this.import_handleClick}
-                            import_handleChange = {this.import_handleChange}/>
+                            mainRenderHandleClick={this.mainRenderHandleClick}
+                            secondaryRendersHandleChange={this.secondaryRendersHandleChange}
+                            importHandleClick = {this.importHandleClick}
+                            importHandleChange = {this.importHandleChange}/>
                 </header>
                 <section id='main-view' className='view1'>
-                    <ModelView/>
+                    <ModelView projectionHandleClick={this.projectionHandleClick} onCanvasMount={this.onCanvasMount}/>
                 </section>
                 <LoadModal  hide={loadModal_hide}  message={this.state.message} />
-                <ErrorModal hide={errorModal_hide} message={this.state.message} clean_app={this.clean_app}/>
-            </>
+                <ErrorModal hide={errorModal_hide} message={this.state.message} cleanApp={this.cleanApp}/>
+            </React.Fragment>
         )
     }
 }

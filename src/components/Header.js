@@ -32,11 +32,10 @@ class Header extends  React.Component {
             <><div className='autogrid'>
                 <HeaderSection>
                     <input hidden ref={input => this.import_input = input} type="file"
-                           onChange={() => this.props.import_handleChange(this.import_input.files[0])}
-                    />
+                           onChange={() => this.props.importHandleChange(this.import_input.files[0])}/>
                     <HeaderButton id="load-model"
                                   tooltip="Load Model"
-                                  handleClick={() => this.props.import_handleClick(this.import_input)}
+                                  handleClick={() => this.props.importHandleClick(this.import_input)}
                     ><ImportIcon/></HeaderButton>
                 </HeaderSection>
 
@@ -47,7 +46,7 @@ class Header extends  React.Component {
                                       type={render.type}
                                       tooltip={render.tooltip}
                                       active={render.active}
-                                      handleClick={this.props.main_render_handleClick}
+                                      handleClick={this.props.mainRenderHandleClick}
                         >{getIconComponent(render.key)}</HeaderButton>
                     )}
                 </HeaderSection>
@@ -59,7 +58,7 @@ class Header extends  React.Component {
                                                id={render.key}
                                                text={render.text}
                                                checked={render.checked}
-                                               handleChange={this.props.secondary_render_handleChange}
+                                               handleChange={this.props.secondaryRendersHandleChange}
                             >{getIconComponent(render.key)}</HeaderListElement>
                         )}
                     </HeaderList>

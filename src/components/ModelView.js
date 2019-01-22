@@ -1,26 +1,16 @@
 import React from "react";
 
 class ModelView extends React.Component {
+    componentDidMount(){
+        this.props.onCanvasMount(this.canvas);
+    }
+
     render(){
         return(
             <div className='model-view'>
-                <canvas/>
+                <canvas ref={canvas => this.canvas = canvas}/>
                 <div className="model-opt">
-                    <div className="tooltiped" data-tooltip="Change perspective">
-                        <button className="prev_a view-opt">
-                            <div className="scene">
-                                <div className="cube">
-                                    <div className="face top"/>
-                                    <div className="face left"/>
-                                    <div className="face right"/>
-                                </div>
-                            </div>
-                        </button>
-                    </div>
-                    <div className="zoom">
-                        <i className="material-icons">zoom_in</i>
-                        <input readOnly type="text" value="1.00"/>
-                    </div>
+                    <ProjectionButton projectionHandleClick={this.props.projectionHandleClick}/>
                 </div>
                 <div className="model-stadistics">
                     <div className="autogrid center">
@@ -40,5 +30,24 @@ class ModelView extends React.Component {
         )
     }
 }
+
+class ProjectionButton extends React.Component {
+    render() {
+        return (
+            <div className="tooltiped" data-tooltip="Change Projection">
+                <button className="prev_a view-opt" onClick={() => this.props.projectionHandleClick(this.projection_button)}>
+                    <div ref={button => this.projection_button = button} className="scene pers">
+                        <div className="cube">
+                            <div className="face top"/>
+                            <div className="face left"/>
+                            <div className="face right"/>
+                        </div>
+                    </div>
+                </button>
+            </div>
+        )
+    }
+}
+
 
 export default ModelView

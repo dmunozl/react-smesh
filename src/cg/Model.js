@@ -1,11 +1,13 @@
 export default class Model{
     constructor() {
+        // MODEL STATUS
         this.status = 'LOADING';
         this.message = 'Loading Model';
+
+        // MODEL INFO
         this.vertices = [];
         this.vertices_start = [];
         this.vertices_normals = [];
-
         this.faces = [];
         this.half_edges = [];
         this.face_normals = [];

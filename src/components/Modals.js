@@ -20,7 +20,7 @@ export const ErrorModal = (props) => (
     <div id="modal-warning" className={props.hide + " modal error"}>
         <div className="flex center">
             <div className="modal-container">
-                <div className="modal-close close" onClick={props.clean_app}><i className="material-icons">close</i></div>
+                <div className="modal-close close" onClick={props.cleanApp}><i className="material-icons">close</i></div>
                 <div className="modal-header">
                     <div className="icon"/>
                     <h4>Error</h4>
