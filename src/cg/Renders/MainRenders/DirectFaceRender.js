@@ -20,8 +20,8 @@ class DirectFaceRender extends Render {
         this.modelLocation = gl.getUniformLocation(this.program, "u_world");
         this.reverseLightDirectionLocation = gl.getUniformLocation(this.program, "u_reverseLightDirection");
 
-        this.positionBuffer = this.rModel.getTrianglesBuffer();
-        this.normalBuffer = this.rModel.getTrianglesNormalsBuffer();
+        this.positionBuffer = gl.createBuffer();
+        this.normalBuffer = gl.createBuffer();
         this.colorBuffer = gl.createBuffer();
         this.vao = gl.createVertexArray();
 
@@ -29,15 +29,17 @@ class DirectFaceRender extends Render {
 
         gl.enableVertexAttribArray(this.positionAttributeLocation);
         gl.bindBuffer(gl.ARRAY_BUFFER, this.positionBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, this.model.getTrianglesArray(), gl.STATIC_DRAW);
         gl.vertexAttribPointer(this.positionAttributeLocation, 3, gl.FLOAT, false, 0, 0);
 
         gl.enableVertexAttribArray(this.normalAttributeLocation);
         gl.bindBuffer(gl.ARRAY_BUFFER, this.normalBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, this.model.getFacesNormalsArray(), gl.STATIC_DRAW);
         gl.vertexAttribPointer(this.normalAttributeLocation, 3, gl.FLOAT, false, 0, 0);
 
         gl.enableVertexAttribArray(this.colorAttributeLocation);
         gl.bindBuffer(gl.ARRAY_BUFFER, this.colorBuffer);
-        gl.bufferData(gl.ARRAY_BUFFER, this.rModel.getColorMatrix(), gl.STATIC_DRAW);
+        gl.bufferData(gl.ARRAY_BUFFER, this.model.getColorsArray(), gl.STATIC_DRAW);
         gl.vertexAttribPointer(this.colorAttributeLocation, 3, gl.FLOAT, false, 0, 0);
     }
 
