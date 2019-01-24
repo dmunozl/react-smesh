@@ -74,9 +74,12 @@ export default class OffFileHandler extends  AbstractFileHandler{
         }
 
         if(isEof) {
+            this.model.updateStatus('LOADING', `Finishing Touchs`);
             this.completeTwins();
-            //this.calculateFacesNormals();
+            this.calculateFacesNormals();
             //this.calculateVerticesNormals();
+            this.model.determineBounds();
+            this.model.setMatrices();
             this.finishLoad();
             return;
         }

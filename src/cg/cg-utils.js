@@ -99,3 +99,7 @@ const createProgram = (gl, shaders, opt_attribs, opt_locations, opt_errorCallbac
     }
     return program;
 };
+
+export const degToRad = (d) => {
+    return d * Math.PI / 180;
+};

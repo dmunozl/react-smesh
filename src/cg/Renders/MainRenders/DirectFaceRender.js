@@ -4,7 +4,7 @@ import {vec3} from "gl-matrix";
 import {createProgramFromSources} from "../../cg-utils";
 import {normalVertexShader, normalFragmentShader} from "../shaders";
 
-class DirectFaceRender extends Render {
+export default class DirectFaceRender extends Render {
     constructor(model, gl){
         super(model, gl);
         this.program = createProgramFromSources(gl, [normalVertexShader, normalFragmentShader]);
@@ -50,15 +50,15 @@ class DirectFaceRender extends Render {
         let lightDirection = vec3.fromValues(0.5, 0.7, 1);
         vec3.normalize(lightDirection, lightDirection);
 
-        gl.uniformMatrix4fv(this.MVPLocation, false, this.rModel.getMVP());
-        gl.uniformMatrix4fv(this.modelLocation, false, this.rModel.getModelMatrix());
+        gl.uniformMatrix4fv(this.MVPLocation, false, this.model.getMVP(gl));
+        gl.uniformMatrix4fv(this.modelLocation, false, this.model.getModelMatrix());
 
         gl.cullFace(gl.BACK);
         gl.uniform3fv(this.reverseLightDirectionLocation, lightDirection);
-        gl.drawArrays(gl.TRIANGLES, 0, this.rModel.getTrianglesCount()*3);
+        gl.drawArrays(gl.TRIANGLES, 0, this.model.triangles_count*3);
 
         gl.cullFace(gl.FRONT);
         gl.uniform3fv(this.reverseLightDirectionLocation, vec3.negate(lightDirection, lightDirection));
-        gl.drawArrays(gl.TRIANGLES, 0, this.rModel.getTrianglesCount()*3);
+        gl.drawArrays(gl.TRIANGLES, 0, this.model.triangles_count*3);
     }
 }

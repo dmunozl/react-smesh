@@ -6,6 +6,7 @@ import ModelView from './components/ModelView'
 import {LoadModal, ErrorModal} from "./components/Modals";
 
 import fileHandlerFactory from './cg/FileHandlerFactory'
+import DirectFaceRender from './cg/Renders/MainRenders/DirectFaceRender'
 
 import config from './config'
 
@@ -16,11 +17,13 @@ class SMeshApp extends React.Component{
             status: 'NORMAL',
             message: 'Everything is fine',
             gl: undefined,
+            canvas: undefined,
             model: {},
             projection: 'Perspective',
             main_renders: config.main_renders,
             secondary_renders: config.secondary_renders,
             active_main_render: 'FaceRender',
+            main_render: undefined,
             active_secondary_renders: []
         };
     }
@@ -73,12 +76,20 @@ class SMeshApp extends React.Component{
         if (this.state.status === this.state.model.status && this.state.message === this.state.model.message) return;
         const status = this.state.model.status;
         const message = this.state.model.message;
-        this.setState({status, message});
+        let main_render = undefined;
+
+        if(status === 'SUCCESS'){
+            console.log(this.state.model);
+            main_render = new DirectFaceRender(this.state.model, this.state.gl);
+            main_render.init();
+        }
+
+        this.setState({status, message, main_render});
     };
 
     onCanvasMount = (canvas) => {
         const gl = canvas.getContext("webgl2");
-        this.setState({gl});
+        this.setState({gl, canvas});
     };
 
     cleanApp = () => {
@@ -87,11 +98,35 @@ class SMeshApp extends React.Component{
         this.setState({status, model});
     };
 
+    resizeCanvas() {
+        const canvas = this.state.canvas;
+        let width  = canvas.clientWidth*2;
+        let height = canvas.clientHeight*2;
+        if(width > height){
+            canvas.width  = width;
+            canvas.height = width/2;
+        }else{
+            canvas.width  = height*2;
+            canvas.height = height;
+        }
+    }
+
     render(){
         let loadModal_hide = 'hide';
         let errorModal_hide = 'hide';
         if(this.state.status === 'LOADING') loadModal_hide='';
         if(this.state.status === 'ERROR') errorModal_hide='';
+
+        if(this.state.status === 'SUCCESS'){
+            const gl = this.state.gl;
+            this.resizeCanvas();
+            gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+            gl.clearColor(0, 0, 0, 0);
+            gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+            gl.enable(gl.DEPTH_TEST);
+            gl.enable(gl.CULL_FACE);
+            this.state.main_render.draw();
+        }
 
         return(
             <React.Fragment>
