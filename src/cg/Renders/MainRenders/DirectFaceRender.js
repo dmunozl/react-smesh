@@ -5,8 +5,8 @@ import {createProgramFromSources} from "../../cg-utils";
 import {normalVertexShader, normalFragmentShader} from "../shaders";
 
 export default class DirectFaceRender extends Render {
-    constructor(model, gl){
-        super(model, gl);
+    constructor(r_model, gl){
+        super(r_model, gl);
         this.program = createProgramFromSources(gl, [normalVertexShader, normalFragmentShader]);
     }
 

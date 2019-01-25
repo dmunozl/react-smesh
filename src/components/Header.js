@@ -10,7 +10,7 @@ import ResetIcon from '../icons/reset_icon'
 
 class Header extends  React.Component {
     render(){
-        let main_renders = this.props.main_renders.map(render => {
+        let main_renders = this.props.main_render_list.map(render => {
             if(render.key === this.props.active_main_render){
                 render.active = 'active';
             }else{
@@ -19,7 +19,7 @@ class Header extends  React.Component {
             return render
         });
 
-        let secondary_renders = this.props.secondary_renders.map(render => {
+        let secondary_renders = this.props.secondary_render_list.map(render => {
            if(this.props.active_secondary_renders.includes(render.key)){
                render.checked = 'checked';
            }else{

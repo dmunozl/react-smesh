@@ -1,22 +1,18 @@
 import {vec3, vec4, mat4} from 'gl-matrix'
 import {degToRad} from "./cg-utils";
 
-export default class Model {
-    constructor() {
+export default class RModel {
+    constructor(model, gl) {
+        // ORIGINAL MODEL REFERENCE
+        this.model = model;
+        this.gl = gl;
+
         // MODEL STATUS
         this.status = 'LOADING';
-        this.message = 'Loading Model';
-
-        // MODEL INFO
-        this.bounds = [];
-        this.vertices = [];
-        this.vertices_start = [];
-        this.vertices_normals = [];
-        this.faces = [];
-        this.half_edges = [];
-        this.face_normals = [];
+        this.message = 'Loading RModel';
 
         // RENDERING INFO
+        this.bounds = [];
         this.center = undefined;
         this.width = undefined;
         this.height = undefined;
@@ -36,44 +32,18 @@ export default class Model {
 
     // MODEL CREATION AND UPDATES
 
+    loadData(){
+        this.status = 'SUCCESS';
+        this.loadedCallback();
+    }
+
     setLoadedCallback(callback){
         this.loadedCallback = callback;
     }
 
-    updateStatus(status, message){
-        this.status = status;
-        this.message = message;
-    }
-
-    addVertex(vertex){
-        this.vertices.push(vertex);
-        this.vertices_start.push([]);
-        this.vertices_normals.push([]);
-    }
-
-    addHalfEdge(half_edge){
-        this.half_edges.push(half_edge);
-    }
-
-    addFace(face){
-        this.faces.push(face);
-        this.face_normals.push([]);
-    }
-
-    updateVertexStart(vertex_index, value){
-        this.vertices_start[vertex_index].push(value);
-    }
-
-    updateVertexNormal(vertex_index, normal){
-        this.vertices_normals[vertex_index] = normal;
-    }
-
-    updateFaceNormal(face_index, normal){
-        this.face_normals[face_index] = normal;
-    }
-
-    determineBounds(){
-        for (const vertex of this.vertices) {
+    determineModelInfo(){
+        const vertices = this.model.vertices;
+        for (const vertex of vertices) {
             const x = vertex[0], y = vertex[1], z = vertex[2];
 
             if (!this.bounds.length) this.bounds = [x, y, z, x, y, z];
@@ -174,20 +144,20 @@ export default class Model {
         return modelMatrix;
     }
 
-    getProjectionMatrix(gl){
+    getProjectionMatrix(){
         if(this.projection === "Orthogonal"){
-            return this.getOrthogonalProjectionMatrix(gl);
+            return this.getOrthogonalProjectionMatrix(this.gl);
         }
-        return this.getPerspectiveProjectionMatrix(gl);
+        return this.getPerspectiveProjectionMatrix(this.gl);
     }
 
-    getOrthogonalProjectionMatrix(gl){
+    getOrthogonalProjectionMatrix(){
         const orthogonalProjectionMatrix = mat4.create();
-        const aspect = gl.canvas.clientWidth/gl.canvas.clientHeight;
+        const aspect = this.gl.canvas.clientWidth/this.gl.canvas.clientHeight;
 
         let width, height;
         const margin = 1.5;
-        if(gl.canvas.clientWidth < gl.canvas.clientHeight){
+        if(this.gl.canvas.clientWidth < this.gl.canvas.clientHeight){
             width = this.width;
             height = this.width/aspect
         }else{
@@ -198,9 +168,9 @@ export default class Model {
         return orthogonalProjectionMatrix;
     }
 
-    getPerspectiveProjectionMatrix(gl){
+    getPerspectiveProjectionMatrix(){
       const perspectiveProjectionMatrix = mat4.create();
-      const aspect = gl.canvas.clientWidth/gl.canvas.clientHeight;
+      const aspect = this.gl.canvas.clientWidth/this.gl.canvas.clientHeight;
       const fieldOfViewRadians = degToRad(60);
       mat4.perspective(perspectiveProjectionMatrix, fieldOfViewRadians, aspect, 1, this.depth*50);
 

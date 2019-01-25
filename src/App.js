@@ -1,30 +1,34 @@
 import React from 'react';
-import WatchJS from 'melanke-watchjs'
-
+// OWN COMPONENTS
 import Header from './components/Header'
 import ModelView from './components/ModelView'
 import {LoadModal, ErrorModal} from "./components/Modals";
-
+// CG OBJECTS
 import fileHandlerFactory from './cg/FileHandlerFactory'
+import RModel from './cg/RModel'
 import DirectFaceRender from './cg/Renders/MainRenders/DirectFaceRender'
-
+// OTHERS
 import config from './config'
 
 class SMeshApp extends React.Component{
-    constructor(){
-        super();
-        this.state ={
-            status: 'NORMAL',
+    constructor(props){
+        super(props);
+        this.state = {
+            status: 'IDLE',
             message: 'Everything is fine',
+
             gl: undefined,
             canvas: undefined,
-            model: {},
-            projection: 'Perspective',
-            main_renders: config.main_renders,
-            secondary_renders: config.secondary_renders,
-            active_main_render: 'FaceRender',
+            model: undefined,
+            r_model: undefined,
             main_render: undefined,
-            active_secondary_renders: []
+            secondary_renders: undefined,
+
+            projection: 'Perspective',
+            active_main_render: 'FaceRender',
+            active_secondary_renders: [],
+            main_render_list: config.main_renders,
+            secondary_render_list: config.secondary_renders,
         };
     }
 
@@ -54,12 +58,14 @@ class SMeshApp extends React.Component{
         if(file) {
             const fileHandler = fileHandlerFactory.getFileHandler(file);
             fileHandler.loadData();
+
             const model = fileHandler.getModel();
-            const status = model.status;
-            const message = model.message;
+            const status = 'LOADING';
+            const message = 'Loading Model';
+
+            model.setLoadedCallback(this.onModelLoaded);
 
             this.setState({status, message, model});
-            WatchJS.watch(model, 'message', this.onModelStatusChange);
         }
     };
 
@@ -72,19 +78,38 @@ class SMeshApp extends React.Component{
         this.setState({projection});
     };
 
-    onModelStatusChange = () => {
-        if (this.state.status === this.state.model.status && this.state.message === this.state.model.message) return;
-        const status = this.state.model.status;
-        const message = this.state.model.message;
-        let main_render = undefined;
+    onModelLoaded = () => {
+        let status = this.state.model.status;
+        let message = this.state.model.message;
+        let r_model = undefined;
 
-        if(status === 'SUCCESS'){
-            console.log(this.state.model);
+        if (status === 'SUCCESS') {
+            status = 'LOADING';
+            message = 'Calculating Rendering Info';
+            r_model = new RModel(this.state.model, this.state.gl);
+
+            this.setState({status, message, r_model});
+
+            setTimeout(() => {
+                r_model.setLoadedCallback(this.onRModelLoaded);
+                r_model.loadData();
+            }, 100);
+        } else {
+            this.setState({status, message, r_model})
+        }
+    };
+
+    onRModelLoaded = () => {
+        let status = this.state.r_model.status;
+        let message = this.state.r_model.message;
+        let main_render =  undefined;
+
+        if (status === 'SUCCESS') {
             main_render = new DirectFaceRender(this.state.model, this.state.gl);
             main_render.init();
         }
 
-        this.setState({status, message, main_render});
+        this.setState({status, message, main_render})
     };
 
     onCanvasMount = (canvas) => {
@@ -93,9 +118,10 @@ class SMeshApp extends React.Component{
     };
 
     cleanApp = () => {
-        const status = 'NORMAL';
-        const model = {};
-        this.setState({status, model});
+        const status = 'IDLE';
+        const model = undefined;
+        const r_model = undefined;
+        this.setState({status, model, r_model});
     };
 
     resizeCanvas() {
@@ -131,8 +157,8 @@ class SMeshApp extends React.Component{
         return(
             <React.Fragment>
                 <header>
-                    <Header main_renders={this.state.main_renders}
-                            secondary_renders={this.state.secondary_renders}
+                    <Header main_render_list={this.state.main_render_list}
+                            secondary_render_list={this.state.secondary_render_list}
                             active_main_render={this.state.active_main_render}
                             active_secondary_renders={this.state.active_secondary_renders}
                             mainRenderHandleClick={this.mainRenderHandleClick}

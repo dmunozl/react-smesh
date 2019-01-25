@@ -15,6 +15,7 @@ export default class OffFileHandler extends  AbstractFileHandler{
     }
 
     loadData(){
+        this.model.updateStatus('LOADING', 'loading model');
         this.navigator.readSomeLines(0, (err, index, lines, isEof) => {
             this.linesHandler(err, index,lines, isEof)
         });
@@ -23,11 +24,13 @@ export default class OffFileHandler extends  AbstractFileHandler{
     linesHandler(err, index, lines, isEof){
         if (index === 0 && !this.validateFile(lines[0])){
             this.model.updateStatus('ERROR', `Invalid ${this.file_extension} File`);
+            this.model.loadedCallback();
             return;
         }
 
         if(err){
             this.model.updateStatus('ERROR', 'line-navigator error');
+            this.model.loadedCallback();
             return;
         }
 
@@ -45,14 +48,10 @@ export default class OffFileHandler extends  AbstractFileHandler{
                         this.faces_count = parseInt(line[1]);
                     }
                 } else if (this.vertex_index < this.vertices_count) {
-                    const progress = Math.ceil((this.vertex_index*100)/this.vertices_count);
-                    this.model.updateStatus('LOADING', `Processing Vertices (${progress}%)`);
                     const x = parseFloat(line[0]), y = parseFloat(line[1]), z = parseFloat(line[2]);
                     this.model.addVertex([x, y, z]);
                     this.vertex_index++;
                 } else {
-                    let progress = Math.ceil((this.face_index*100)/this.faces_count);
-                    this.model.updateStatus('LOADING', `Processing Faces (${progress}%)`);
                     const sides_count = parseInt(line[0]);
                     this.model.addFace(this.he_index);
                     for (let i = 1; i<=sides_count; i++){
@@ -74,13 +73,13 @@ export default class OffFileHandler extends  AbstractFileHandler{
         }
 
         if(isEof) {
-            this.model.updateStatus('LOADING', `Finishing Touchs`);
             this.completeTwins();
             this.calculateFacesNormals();
             //this.calculateVerticesNormals();
             this.model.determineBounds();
             this.model.setMatrices();
             this.finishLoad();
+            this.model.loadedCallback();
             return;
         }
 
