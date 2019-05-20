@@ -55,12 +55,14 @@ class Header extends  React.Component {
                 <HeaderSection>
                     <HeaderList tooltip = 'Display Properties'>
                         {secondary_renderers.map(render =>
-                            <HeaderListElement key={render.key}
-                                               id={render.key}
-                                               text={render.text}
-                                               checked={render.checked}
-                                               handleChange={this.props.secondaryRenderHandleChange}
-                            >{getIconComponent(render.key)}</HeaderListElement>
+                            <HeaderListElement
+                              key={render.key}
+                              id={render.key}
+                              text={render.text}
+                              checked={render.checked}
+                              handleChange={this.props.secondaryRenderHandleChange}>
+                              {getIconComponent(render.key)}
+                            </HeaderListElement>
                         )}
                     </HeaderList>
                 </HeaderSection>

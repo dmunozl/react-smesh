@@ -5,6 +5,7 @@
   "dependencies": {
     "gl-matrix": "^3.0.0",
     "line-navigator": "^2.1.6",
+    "melanke-watchjs": "^1.5.0",
     "react": "^16.7.0",
     "react-dom": "^16.7.0",
     "react-scripts": "2.1.3"

@@ -1,6 +1,6 @@
 import React from "react";
 import {RModel} from '../cg/RModel'
-import DirectlightRenderer from "../cg/Renderers/MainRenderers/DirectLightRenderer";
+import DirectLightRenderer from "../cg/Renderers/MainRenderers/DirectLightRenderer";
 
 class ModelView extends React.Component {
     constructor(props) {
@@ -21,7 +21,7 @@ class ModelView extends React.Component {
     componentWillReceiveProps(nextProps, nextContext) {
         if(nextProps.status === 'SUCCESS'){
             const r_model = new RModel(nextProps.model, this.gl);
-            const main_renderer = new DirectlightRenderer(this.gl, r_model);
+            const main_renderer = new DirectLightRenderer(this.gl, r_model);
             this.setState({
                 r_model,
                 main_renderer
@@ -64,17 +64,7 @@ class ModelView extends React.Component {
         return <div className='model-view'>
             <canvas ref={this.canvas_ref}/>
             <div className="model-opt">
-                <div className="tooltiped" data-tooltip="Change perspective">
-                    <button className="prev_a view-opt">
-                        <div className="scene">
-                            <div className="cube">
-                                <div className="face top"/>
-                                <div className="face left"/>
-                                <div className="face right"/>
-                            </div>
-                        </div>
-                    </button>
-                </div>
+                <ProjectionButton/>
                 <div className="zoom">
                     <i className="material-icons">zoom_in</i>
                     <input readOnly type="text" value="1.00"/>
@@ -98,5 +88,24 @@ class ModelView extends React.Component {
 
     }
 }
+
+class ProjectionButton extends React.Component {
+    render() {
+        return (
+          <div className="tooltiped" data-tooltip="Change Projection">
+              <button className="prev_a view-opt" onClick={() => this.props.projectionHandleClick(this.projection_button)}>
+                  <div ref={button => this.projection_button = button} className="scene pers">
+                      <div className="cube">
+                          <div className="face top"/>
+                          <div className="face left"/>
+                          <div className="face right"/>
+                      </div>
+                  </div>
+              </button>
+          </div>
+        )
+    }
+}
+
 
 export default ModelView

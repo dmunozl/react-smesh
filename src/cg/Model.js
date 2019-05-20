@@ -1,7 +1,7 @@
 import FileHandlerFactory from './FileHandlerFactory'
 import {vec3} from 'gl-matrix'
 
-export class Model{
+export default class Model{
     constructor(file, updateCallback) {
         this.status = 'LOADING';
         this.updateCallback = () => updateCallback(this);

@@ -669,7 +669,8 @@ textarea {
     color: #8B8B8B; }
 
 .modal {
-  display: none;
+  transition: opacity 1s;
+  opacity: 1;
   position: fixed;
   left: 0;
   top: 0;
@@ -677,32 +678,43 @@ textarea {
   height: 100vh;
   z-index: 9;
   background-color: rgba(255, 255, 255, 0.6); }
-  .modal .close {
-    position: absolute;
-    top: 15px;
-    right: 15px;
-    font-size: 24px;
-    cursor: pointer;
-    color: #FFA0B6;
-    transition: color .3s; }
-  .modal .close:hover {
-    color: #ff7091; }
-  .modal .modal-body {
-    padding: 15px;
-    padding-top: 0; }
-  .modal .modal-header {
-    padding: 10px 15px;
-    padding-right: 40px; }
-    .modal .modal-header h3 {
-      text-transform: uppercase;
-      margin: 15px 0;
-      font-size: 20px; }
-    .modal .modal-header h4 {
-      margin: 10px 0; }
-  .modal p {
-    font-size: 16px;
-    margin: 0 0 10px;
-    line-height: 1.5; }
+
+.modal.hide {
+  opacity:0;
+  pointer-events: none;}
+
+.modal .close {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  font-size: 24px;
+  cursor: pointer;
+  color: #FFA0B6;
+  transition: color .3s; }
+
+.modal .close:hover {
+  color: #ff7091; }
+
+.modal .modal-body {
+  padding: 15px;
+  padding-top: 0; }
+
+.modal .modal-header {
+  padding: 10px 15px;
+  padding-right: 40px; }
+
+.modal .modal-header h3 {
+  text-transform: uppercase;
+  margin: 15px 0;
+  font-size: 20px; }
+
+.modal .modal-header h4 {
+  margin: 10px 0; }
+
+.modal p {
+  font-size: 16px;
+  margin: 0 0 10px;
+  line-height: 1.5; }
 
 .modal.loader .modal-body {
   padding: 10px 50px 30px; }

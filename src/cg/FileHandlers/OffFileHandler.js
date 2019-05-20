@@ -5,7 +5,6 @@ export default class OffFileHandler{
         this.file = file;
     }
 
-
     getModelData(setDataCallback){
         const model_data = {
             'status': 'LOADING'

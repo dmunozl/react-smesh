@@ -1,26 +1,26 @@
 import {vec3, vec4, mat4} from 'gl-matrix';
 import {degToRad} from "./cgUtils";
 
-export class RModel{
-  constructor(model, gl){
+export class RModel {
+  constructor(model, gl) {
     // ----- GL reference -----
     this.gl = gl;
 
     // ----- MODEL GENERAL INFO -----
     this.center = vec3.fromValues(
-      (model.bounds[0]+model.bounds[3])/2,
-      (model.bounds[1]+model.bounds[4])/2,
-      (model.bounds[2]+model.bounds[5])/2);
+      (model.bounds[0] + model.bounds[3]) / 2,
+      (model.bounds[1] + model.bounds[4]) / 2,
+      (model.bounds[2] + model.bounds[5]) / 2);
 
     this.model_width = Math.abs(model.bounds[3] - model.bounds[0]);
     this.model_height = Math.abs(model.bounds[4] - model.bounds[1]);
     this.model_depth = Math.abs(model.bounds[5] - model.bounds[2]);
 
     this.view_type = 'perspective';
-    this.aspect = this.gl.canvas.clientWidth/this.gl.canvas.clientHeight;
+    this.aspect = this.gl.canvas.clientWidth / this.gl.canvas.clientHeight;
 
     this.scale = vec3.fromValues(1, 1, 1);
-    this.translation = vec3.fromValues(0,0,0);
+    this.translation = vec3.fromValues(0, 0, 0);
     this.rotation_matrix = mat4.create();
 
     // ----- ARRAYS WITH BUFFER INFO -----
@@ -41,7 +41,7 @@ export class RModel{
 
   // ----- RModel initial setup methods -----
 
-  setMatrices(){
+  setMatrices() {
     // --- Model Matrix ---
     const translation = vec3.fromValues(
       -this.center[0],
@@ -52,14 +52,14 @@ export class RModel{
     mat4.translate(this.model_matrix, this.model_matrix, translation);
 
     // --- View Matrix ---
-    const camera = vec3.fromValues(0, 0, this.model_depth*2);
+    const camera = vec3.fromValues(0, 0, this.model_depth * 2);
     const target = vec3.fromValues(0, 0, 0);
     const up = vec3.fromValues(0, 1, 0);
     this.viewMatrix = mat4.create();
     mat4.lookAt(this.viewMatrix, camera, target, up);
   }
 
-  setTriangles(model){
+  setTriangles(model) {
     const faces = model.faces;
     const vertices = model.vertices;
     const half_edges = model.half_edges;
@@ -67,14 +67,14 @@ export class RModel{
 
     let triangles_count = 0;
 
-    for(let i = 0; i < faces.length; i++){
+    for (let i = 0; i < faces.length; i++) {
       const first_he = half_edges[faces[i]];
       let second_he = half_edges[first_he[3]];
       let third_he = half_edges[second_he[3]];
 
       const face_normal = model.faces_normals[i];
 
-      while(third_he[0] !== first_he[0]){
+      while (third_he[0] !== first_he[0]) {
         const vertex_1 = vertices[first_he[0]];
         const vertex_2 = vertices[second_he[0]];
         const vertex_3 = vertices[third_he[0]];
@@ -105,7 +105,7 @@ export class RModel{
 
   // ----- RModel necessary getters -----
 
-  getModelMatrix(){
+  getModelMatrix() {
     const model_matrix = mat4.create();
     const translation = vec3.fromValues(-this.center[0], -this.center[1], -this.center[2]);
 
@@ -117,45 +117,45 @@ export class RModel{
     return model_matrix
   }
 
-  getOrthogonalProjectionMatrix(){
+  getOrthogonalProjectionMatrix() {
     const orthogonal_projection_matrix = mat4.create();
     let width = this.model_width;
     let height = this.model_height;
     const margin = 1.5;
 
     if (this.gl.canvas.clientWidth > this.gl.canvas.clientHeight) {
-      width = this.model_height*this.aspect;
+      width = this.model_height * this.aspect;
     }
 
     mat4.ortho(
       orthogonal_projection_matrix,
-      -(width/2)*margin, (width/2)*margin,
-      -(height/2)*margin, (height/2)*margin,
-      1, this.model_depth*50);
+      -(width / 2) * margin, (width / 2) * margin,
+      -(height / 2) * margin, (height / 2) * margin,
+      1, this.model_depth * 50);
 
     return orthogonal_projection_matrix;
   }
 
-  getPerspectiveProjectionMatrix(){
+  getPerspectiveProjectionMatrix() {
     const perspective_projection_matrix = mat4.create();
     const field_of_view_radians = degToRad(60);
 
     mat4.perspective(
       perspective_projection_matrix,
       field_of_view_radians, this.aspect,
-      1, this.model_depth*50);
+      1, this.model_depth * 50);
 
     return perspective_projection_matrix
   }
 
-  getProjectionMatrix(){
+  getProjectionMatrix() {
     if (this.view_type === 'orthogonal') {
       return this.getOrthogonalProjectionMatrix();
     }
     return this.getPerspectiveProjectionMatrix();
   }
 
-  getMV(){
+  getMV() {
     if (this.recalculate_MV) {
       mat4.multiply(this.MV, this.viewMatrix, this.getModelMatrix());
       this.recalculate_MV = false;
@@ -164,7 +164,7 @@ export class RModel{
     return this.MV
   }
 
-  getMVP(){
+  getMVP() {
     if (this.recalculate_MVP) {
       mat4.multiply(this.MVP, this.getProjectionMatrix(), this.getMV());
       this.recalculate_MVP = false;
@@ -172,7 +172,7 @@ export class RModel{
     return this.MVP
   }
 
-  getTrianglesBuffer(){
+  getTrianglesBuffer() {
     const buffer = this.gl.createBuffer();
     this.gl.bindBuffer(this.gl.ARRAY_BUFFER, buffer);
     this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(this.triangles_array), this.gl.STATIC_DRAW);
@@ -180,7 +180,7 @@ export class RModel{
     return buffer
   }
 
-  getTrianglesNormalsBuffer(){
+  getTrianglesNormalsBuffer() {
     const buffer = this.gl.createBuffer();
     this.gl.bindBuffer(this.gl.ARRAY_BUFFER, buffer);
     this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(this.triangles_normals_array), this.gl.STATIC_DRAW)
@@ -188,7 +188,7 @@ export class RModel{
     return buffer
   }
 
-  getColorMatrix(){
+  getColorMatrix() {
     return new Float32Array(this.colors_array)
   }
 }
