@@ -1,6 +1,6 @@
 import React from 'react';
-
 import {getIconComponent} from "../utils";
+
 
 // ICONS IMPORTS
 import ImportIcon from '../icons/import_icon'
@@ -10,8 +10,8 @@ import ResetIcon from '../icons/reset_icon'
 
 class Header extends  React.Component {
     render(){
-        let main_renders = this.props.main_renders.map(render => {
-            if(render.key === this.props.active_main_render){
+        let main_renderers = this.props.main_renderers.map(render => {
+            if(render.key === this.props.active_main_renderer){
                 render.active = 'active';
             }else{
                 render.active = ''
@@ -19,8 +19,8 @@ class Header extends  React.Component {
             return render
         });
 
-        let secondary_renders = this.props.secondary_renders.map(render => {
-           if(this.props.active_secondary_renders.includes(render.key)){
+        let secondary_renderers = this.props.secondary_renderers.map(render => {
+           if(this.props.active_secondary_renderers.includes(render.key)){
                render.checked = 'checked';
            }else{
                render.checked = ''
@@ -32,34 +32,34 @@ class Header extends  React.Component {
             <><div className='autogrid'>
                 <HeaderSection>
                     <input hidden ref={input => this.import_input = input} type="file"
-                           onChange={() => this.props.import_handleChange(this.import_input.files[0])}
+                           onChange={() => this.props.importHandleChange(this.import_input.files[0])}
                     />
                     <HeaderButton id="load-model"
                                   tooltip="Load Model"
-                                  handleClick={() => this.props.import_handleClick(this.import_input)}
+                                  handleClick={() => this.props.importHandleClick(this.import_input)}
                     ><ImportIcon/></HeaderButton>
                 </HeaderSection>
 
                 <HeaderSection>
-                    {main_renders.map(render =>
+                    {main_renderers.map(render =>
                         <HeaderButton key={render.key}
                                       id = {render.key}
                                       type={render.type}
                                       tooltip={render.tooltip}
                                       active={render.active}
-                                      handleClick={this.props.main_render_handleClick}
+                                      handleClick={this.props.mainRenderHandleClick}
                         >{getIconComponent(render.key)}</HeaderButton>
                     )}
                 </HeaderSection>
 
                 <HeaderSection>
                     <HeaderList tooltip = 'Display Properties'>
-                        {secondary_renders.map(render =>
+                        {secondary_renderers.map(render =>
                             <HeaderListElement key={render.key}
                                                id={render.key}
                                                text={render.text}
                                                checked={render.checked}
-                                               handleChange={this.props.secondary_render_handleChange}
+                                               handleChange={this.props.secondaryRenderHandleChange}
                             >{getIconComponent(render.key)}</HeaderListElement>
                         )}
                     </HeaderList>
