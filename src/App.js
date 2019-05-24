@@ -22,7 +22,6 @@ class SMeshApp extends React.Component{
 
   mainRenderHandleClick = (renderer) => {
     this.setState({active_main_renderer:renderer});
-    console.log(renderer)
   };
 
   secondaryRenderHandleChange = (render) => {
@@ -59,28 +58,32 @@ class SMeshApp extends React.Component{
   };
 
   render(){
-    return(
-      <React.Fragment>
-        <header>
-          <Header
-            main_renderers={this.state.main_renderers}
-            secondary_renderers={this.state.secondary_renderers}
-            active_main_renderer={this.state.active_main_renderer}
-            active_secondary_renderers={this.state.active_secondary_renderers}
-            mainRenderHandleClick={this.mainRenderHandleClick}
-            secondaryRenderHandleChange={this.secondaryRenderHandleChange}
-            importHandleClick = {this.importHandleClick}
-            importHandleChange = {this.importHandleChange}/>
-        </header>
-        <section id='main-view' className='view1'>
-          <ModelView
-            model={this.state.model}
-            status = {this.state.status}
-            active_main_renderer={this.state.active_main_renderer}
-            active_secondary_renderers={this.state.active_secondary_renderers}/>
-        </section>
-      </React.Fragment>
-    )
+    const hide_loading = this.state.status === 'LOADING'? '' : 'hidden';
+    const hide_error = this.state.status === 'ERROR'? '' : 'hidden';
+
+    return <React.Fragment>
+      <header>
+        <Header
+          main_renderers={this.state.main_renderers}
+          secondary_renderers={this.state.secondary_renderers}
+          active_main_renderer={this.state.active_main_renderer}
+          active_secondary_renderers={this.state.active_secondary_renderers}
+          mainRenderHandleClick={this.mainRenderHandleClick}
+          secondaryRenderHandleChange={this.secondaryRenderHandleChange}
+          importHandleClick = {this.importHandleClick}
+          importHandleChange = {this.importHandleChange}/>
+      </header>
+      <section id='main-view' className='view1'>
+        <ModelView
+          model={this.state.model}
+          status = {this.state.status}
+          main_renderer={this.state.active_main_renderer}
+          secondary_renderers={this.state.active_secondary_renderers}/>
+          <LoadModal hide={hide_loading} message={this.state.status}/>
+          <ErrorModal hide={hide_error}/>
+      </section>
+    </React.Fragment>
+
   }
 }
 

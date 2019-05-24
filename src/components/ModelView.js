@@ -1,6 +1,8 @@
 import React from "react";
 import {RModel} from '../cg/RModel'
-import DirectLightRenderer from "../cg/Renderers/MainRenderers/DirectLightRenderer";
+
+import RendererFactory from "../cg/RendererFactory"
+import ProjectionButton from "./ProjectionButton";
 
 class ModelView extends React.Component {
     constructor(props) {
@@ -13,17 +15,37 @@ class ModelView extends React.Component {
     }
 
     componentDidMount() {
-        this.canvas = this.canvas_ref.current
+        this.canvas = this.canvas_ref.current;
         this.gl = this.canvas.getContext("webgl2");
         if (!this.gl) {alert("No WebGL");}
     }
 
     componentWillReceiveProps(nextProps, nextContext) {
-        if(nextProps.status === 'SUCCESS'){
-            const r_model = new RModel(nextProps.model, this.gl);
-            const main_renderer = new DirectLightRenderer(this.gl, r_model);
+        if((nextProps.status !== this.props.status) && nextProps.status === 'SUCCESS'){
+            const r_model = new RModel(nextProps.model, nextProps.main_renderer, this.gl);
+            const RendererObject = RendererFactory.getRenderer(nextProps.main_renderer);
+            let main_renderer = null;
+
+            if (RendererObject) {
+                main_renderer = new RendererObject(this.gl, r_model);
+            }
+
             this.setState({
                 r_model,
+                main_renderer
+            });
+        }
+
+        if (this.state.r_model && (nextProps.main_renderer !== this.props.main_renderer)) {
+            this.state.r_model.updateRenderType(nextProps.main_renderer);
+            const RendererObject = RendererFactory.getRenderer(nextProps.main_renderer);
+            let main_renderer = null;
+
+            if (RendererObject) {
+                main_renderer = new RendererObject(this.gl, this.state.r_model);
+            }
+
+            this.setState({
                 main_renderer
             });
         }
@@ -57,9 +79,8 @@ class ModelView extends React.Component {
     }
 
     render(){
-        if (this.state.main_renderer) {
+        if (this.canvas && this.gl)
             this.draw();
-        }
 
         return <div className='model-view'>
             <canvas ref={this.canvas_ref}/>
@@ -85,27 +106,7 @@ class ModelView extends React.Component {
                 </div>
             </div>
         </div>
-
     }
 }
-
-class ProjectionButton extends React.Component {
-    render() {
-        return (
-          <div className="tooltiped" data-tooltip="Change Projection">
-              <button className="prev_a view-opt" onClick={() => this.props.projectionHandleClick(this.projection_button)}>
-                  <div ref={button => this.projection_button = button} className="scene pers">
-                      <div className="cube">
-                          <div className="face top"/>
-                          <div className="face left"/>
-                          <div className="face right"/>
-                      </div>
-                  </div>
-              </button>
-          </div>
-        )
-    }
-}
-
 
 export default ModelView

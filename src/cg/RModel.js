@@ -2,11 +2,12 @@ import {vec3, vec4, mat4} from 'gl-matrix';
 import {degToRad} from "./cgUtils";
 
 export class RModel {
-  constructor(model, gl) {
+  constructor(model, render_type, gl) {
     // ----- GL reference -----
     this.gl = gl;
 
     // ----- MODEL GENERAL INFO -----
+    this.render_type = render_type;
     this.center = vec3.fromValues(
       (model.bounds[0] + model.bounds[3]) / 2,
       (model.bounds[1] + model.bounds[4]) / 2,
@@ -25,9 +26,10 @@ export class RModel {
 
     // ----- ARRAYS WITH BUFFER INFO -----
 
-    this.triangles_array = [];
-    this.triangles_normals_array = [];
-    this.colors_array = [];
+    this.triangles_buffer = gl.createBuffer();
+    this.triangles_normals_buffer = gl.createBuffer();
+    this.vertices_normals_buffer = gl.createBuffer();
+    this.colors_buffer = gl.createBuffer();
     this.setTriangles(model);
 
     // ----- NECESSARY MATRICES CREATION -----
@@ -62,8 +64,14 @@ export class RModel {
   setTriangles(model) {
     const faces = model.faces;
     const vertices = model.vertices;
+    const vertices_normals = model.vertices_normals;
     const half_edges = model.half_edges;
     const color = vec4.fromValues(0.7, 0.7, 0.7, 1);
+
+    const triangles_array = [];
+    const triangles_normals_array = [];
+    const vertices_normals_array = [];
+    const colors_array = [];
 
     let triangles_count = 0;
 
@@ -79,17 +87,26 @@ export class RModel {
         const vertex_2 = vertices[second_he[0]];
         const vertex_3 = vertices[third_he[0]];
 
-        this.triangles_array.push(
+        const vertex_normal_1 = vertices_normals[first_he[0]];
+        const vertex_normal_2 = vertices_normals[second_he[0]];
+        const vertex_normal_3 = vertices_normals[third_he[0]];
+
+        triangles_array.push(
           vertex_1[0], vertex_1[1], vertex_1[2],
           vertex_2[0], vertex_2[1], vertex_2[2],
           vertex_3[0], vertex_3[1], vertex_3[2]);
 
-        this.triangles_normals_array.push(
+        triangles_normals_array.push(
           face_normal[0], face_normal[1], face_normal[2],
           face_normal[0], face_normal[1], face_normal[2],
           face_normal[0], face_normal[1], face_normal[2]);
 
-        this.colors_array.push(
+        vertices_normals_array.push(
+          vertex_normal_1[0], vertex_normal_1[1], vertex_normal_1[2],
+          vertex_normal_2[0], vertex_normal_2[1], vertex_normal_2[2],
+          vertex_normal_3[0], vertex_normal_3[1], vertex_normal_3[2]);
+
+        colors_array.push(
           color[0], color[1], color[2],
           color[0], color[1], color[2],
           color[0], color[1], color[2]);
@@ -100,7 +117,25 @@ export class RModel {
       }
     }
 
+    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.triangles_buffer);
+    this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(triangles_array), this.gl.STATIC_DRAW);
+
+    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.triangles_normals_buffer);
+    this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(triangles_normals_array), this.gl.STATIC_DRAW);
+
+    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.vertices_normals_buffer);
+    this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(vertices_normals_array), this.gl.STATIC_DRAW);
+
+    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.colors_buffer);
+    this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(colors_array), this.gl.STATIC_DRAW);
+
     this.triangles_count = triangles_count;
+  }
+
+  // ----- RModels updaters -----
+
+  updateRenderType(new_render_type){
+    this.render_type = new_render_type
   }
 
   // ----- RModel necessary getters -----
@@ -173,22 +208,19 @@ export class RModel {
   }
 
   getTrianglesBuffer() {
-    const buffer = this.gl.createBuffer();
-    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, buffer);
-    this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(this.triangles_array), this.gl.STATIC_DRAW);
-
-    return buffer
+    return this.triangles_buffer
   }
 
-  getTrianglesNormalsBuffer() {
-    const buffer = this.gl.createBuffer();
-    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, buffer);
-    this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(this.triangles_normals_array), this.gl.STATIC_DRAW)
+  getNormalsBuffer() {
+    let normals_buffer = this.triangles_normals_buffer;
+    if (this.render_type === 'VertexRender') {
+      normals_buffer = this.vertices_normals_buffer;
+    }
 
-    return buffer
+    return normals_buffer
   }
 
-  getColorMatrix() {
-    return new Float32Array(this.colors_array)
+  getColorBuffer() {
+    return this.colors_buffer
   }
 }

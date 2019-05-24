@@ -1,7 +1,7 @@
 import OffFileHandler from './FileHandlers/OffFileHandler'
 import NoFileHandler from './FileHandlers/NoFileHandler'
 
-class FileHandlerFactory{
+class FileHandlerFactory {
     getFileHandler(file){
         const file_extension = file.name.split('.').pop();
         switch(file_extension){

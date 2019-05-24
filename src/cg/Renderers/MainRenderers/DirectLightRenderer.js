@@ -3,7 +3,7 @@ import {createProgramFromSources} from '../../cgUtils'
 import {vertexShader, fragmentShader} from '../../Shaders/normalShader'
 import {vec3} from 'gl-matrix';
 
-export default class DirectlightRenderer extends BaseRenderer{
+export default class DirectLightRenderer extends BaseRenderer{
   constructor(gl, r_model) {
     super(gl, r_model);
     this.program = createProgramFromSources(this.gl, [vertexShader, fragmentShader]);
@@ -21,8 +21,8 @@ export default class DirectlightRenderer extends BaseRenderer{
     this.reverseLightDirectionLocation = gl.getUniformLocation(this.program, "u_reverseLightDirection");
 
     this.positionBuffer = this.r_model.getTrianglesBuffer();
-    this.normalBuffer = this.r_model.getTrianglesNormalsBuffer();
-    this.colorBuffer = gl.createBuffer();
+    this.normalBuffer = this.r_model.getNormalsBuffer();
+    this.colorBuffer = this.r_model.getColorBuffer();
     this.vao = gl.createVertexArray();
 
     gl.bindVertexArray(this.vao);
@@ -37,7 +37,6 @@ export default class DirectlightRenderer extends BaseRenderer{
 
     gl.enableVertexAttribArray(this.colorAttributeLocation);
     gl.bindBuffer(gl.ARRAY_BUFFER, this.colorBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, this.r_model.getColorMatrix(), gl.STATIC_DRAW);
     gl.vertexAttribPointer(this.colorAttributeLocation, 3, gl.FLOAT, false, 0, 0);
   }
 
@@ -45,7 +44,6 @@ export default class DirectlightRenderer extends BaseRenderer{
     const gl = this.gl;
     gl.enableVertexAttribArray(this.colorAttributeLocation);
     gl.bindBuffer(gl.ARRAY_BUFFER, this.colorBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, this.r_model.getColorMatrix(), gl.STATIC_DRAW);
     gl.vertexAttribPointer(this.colorAttributeLocation, 3, gl.FLOAT, false, 0, 0);
   }
 
