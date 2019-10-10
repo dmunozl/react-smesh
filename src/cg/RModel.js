@@ -138,6 +138,15 @@ export class RModel {
     this.render_type = new_render_type
   }
 
+  toggleProjection(){
+    if (this.view_type === 'orthogonal') {
+      this.view_type = 'perspective'
+    } else {
+      this.view_type = 'orthogonal'
+    }
+    this.recalculate_MVP = true;
+  }
+
   // ----- RModel necessary getters -----
 
   getModelMatrix() {

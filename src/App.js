@@ -2,6 +2,7 @@ import React from 'react';
 
 import Header from './components/Header'
 import ModelView from './components/ModelView'
+import Selections from "./components/Selection/Selections";
 import {LoadModal, ErrorModal} from "./components/Modals";
 
 import Model from './cg/Model'
@@ -79,8 +80,9 @@ class SMeshApp extends React.Component{
           status = {this.state.status}
           main_renderer={this.state.active_main_renderer}
           secondary_renderers={this.state.active_secondary_renderers}/>
-          <LoadModal hide={hide_loading} message={this.state.status}/>
-          <ErrorModal hide={hide_error}/>
+        <Selections/>
+        <LoadModal hide={hide_loading} message={this.state.status}/>
+        <ErrorModal hide={hide_error}/>
       </section>
     </React.Fragment>
 

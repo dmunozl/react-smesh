@@ -9,6 +9,7 @@ class ModelView extends React.Component {
         super(props);
         this.state = {
             r_model: undefined,
+            view_type: undefined,
             main_renderer: undefined
         };
         this.canvas_ref = React.createRef();
@@ -51,6 +52,16 @@ class ModelView extends React.Component {
         }
     }
 
+    projectionHandleClick = () => {
+        if (this.state.r_model) {
+            this.state.r_model.toggleProjection();
+
+            this.setState({
+                view_type: this.state.r_model.view_type
+            })
+        }
+    };
+
     draw() {
         const gl = this.gl;
         this.resizeCanvas();
@@ -85,13 +96,15 @@ class ModelView extends React.Component {
         return <div className='model-view'>
             <canvas ref={this.canvas_ref}/>
             <div className="model-opt">
-                <ProjectionButton/>
+                <ProjectionButton
+                  projectionHandleClick={this.projectionHandleClick}
+                  view_type={this.state.view_type}/>
                 <div className="zoom">
                     <i className="material-icons">zoom_in</i>
                     <input readOnly type="text" value="1.00"/>
                 </div>
             </div>
-            <div className="model-stadistics">
+            <div className="model-statistics">
                 <div className="autogrid center">
                     <div className="coord">
                         <span>Y: 23 - 9009</span>
