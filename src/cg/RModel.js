@@ -1,4 +1,4 @@
-import {vec3, vec4, mat4} from 'gl-matrix';
+import {vec3, mat4} from 'gl-matrix';
 import {degToRad} from "./cgUtils";
 
 export class RModel {
@@ -63,10 +63,7 @@ export class RModel {
 
   setTriangles(model) {
     const faces = model.faces;
-    const vertices = model.vertices;
-    const vertices_normals = model.vertices_normals;
-    const half_edges = model.half_edges;
-    const color = vec4.fromValues(0.7, 0.7, 0.7, 1);
+    const color = vec3.fromValues(0.7, 0.7, 0.7);
 
     const triangles_array = [];
     const triangles_normals_array = [];
@@ -75,47 +72,20 @@ export class RModel {
 
     let triangles_count = 0;
 
-    for (let i = 0; i < faces.length; i++) {
-      const first_he = half_edges[faces[i]];
-      let second_he = half_edges[first_he[3]];
-      let third_he = half_edges[second_he[3]];
+    faces.forEach(face => {
+      const face_normal = face.getNormal();
+      for (let i = 1; i < face.vertices.length-1; i++) {
+        const vertex_1 = face.vertices[0];
+        const vertex_2 = face.vertices[i];
+        const vertex_3 = face.vertices[i+1];
 
-      const face_normal = model.faces_normals[i];
-
-      while (third_he[0] !== first_he[0]) {
-        const vertex_1 = vertices[first_he[0]];
-        const vertex_2 = vertices[second_he[0]];
-        const vertex_3 = vertices[third_he[0]];
-
-        const vertex_normal_1 = vertices_normals[first_he[0]];
-        const vertex_normal_2 = vertices_normals[second_he[0]];
-        const vertex_normal_3 = vertices_normals[third_he[0]];
-
-        triangles_array.push(
-          vertex_1[0], vertex_1[1], vertex_1[2],
-          vertex_2[0], vertex_2[1], vertex_2[2],
-          vertex_3[0], vertex_3[1], vertex_3[2]);
-
-        triangles_normals_array.push(
-          face_normal[0], face_normal[1], face_normal[2],
-          face_normal[0], face_normal[1], face_normal[2],
-          face_normal[0], face_normal[1], face_normal[2]);
-
-        vertices_normals_array.push(
-          vertex_normal_1[0], vertex_normal_1[1], vertex_normal_1[2],
-          vertex_normal_2[0], vertex_normal_2[1], vertex_normal_2[2],
-          vertex_normal_3[0], vertex_normal_3[1], vertex_normal_3[2]);
-
-        colors_array.push(
-          color[0], color[1], color[2],
-          color[0], color[1], color[2],
-          color[0], color[1], color[2]);
-
-        second_he = third_he;
-        third_he = half_edges[third_he[3]];
+        triangles_array.push(...vertex_1.coords, ...vertex_2.coords, ...vertex_3.coords);
+        triangles_normals_array.push(...face_normal, ...face_normal, ...face_normal);
+        vertices_normals_array.push(...vertex_1.getNormal(), ...vertex_2.getNormal(), ...vertex_3.getNormal());
+        colors_array.push(...color, ...color, ...color);
         triangles_count += 1;
       }
-    }
+    });
 
     this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.triangles_buffer);
     this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(triangles_array), this.gl.STATIC_DRAW);

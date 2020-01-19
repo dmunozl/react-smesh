@@ -2,7 +2,7 @@ import BaseElement from "./BaseElement";
 import {vec3} from 'gl-matrix';
 
 export default class Polygon extends BaseElement{
-    constructor(id, x, y, z){
+    constructor(id){
         super(id);
         this.vertices = [];
         this.angles = null;
@@ -17,7 +17,6 @@ export default class Polygon extends BaseElement{
     }
 
     // ------- Calculation Methods: Should be called once -------
-    // TODO: these methods might be private
 
     calculateNormal(){
         this.normal = vec3.create();

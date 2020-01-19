@@ -51,7 +51,7 @@ export default class OffFileHandler{
                 if (!model_data['extracted_header']){
                     // --- Count Info ---
                     model_data['vertices_count'] = parseInt(processed_line[0]);
-                    model_data['faces_count'] = parseInt(processed_line[0]);
+                    model_data['faces_count'] = parseInt(processed_line[1]);
                     // --- Index Info ---
                     model_data['vertex_index'] = 0;
                     model_data['face_index'] = 0;
@@ -104,23 +104,12 @@ export default class OffFileHandler{
                 // --- GET FACES ---
                 if (!model_data['extracted_faces']){
                     const sides_count = parseInt(processed_line[0]);
-                    model_data['faces'].push(model_data['he_index']);
+                    const face = [];
 
-                    for (let j = 1; j<=sides_count; j++){
-                        let previous = model_data['he_index'] - 1;
-                        let next = model_data['he_index'] + 1;
-                        const vertex_index = parseInt(processed_line[j]);
-
-                        if (j === 1)
-                            previous = model_data['he_index'] + (sides_count-1);
-
-                        if (j === sides_count)
-                            next = model_data['he_index'] - (sides_count-1);
-
-                        model_data['half_edges'].push([vertex_index, -1, model_data['face_index'], next, previous]);
-                        model_data['vertices_start'][vertex_index].push(model_data['he_index']);
-                        model_data['he_index'] += 1
+                    for (let j = 1; j <= sides_count; j++) {
+                        face.push(parseInt(processed_line[j]))
                     }
+                    model_data['faces'].push(face);
                     model_data['face_index'] += 1;
                 }
             }
