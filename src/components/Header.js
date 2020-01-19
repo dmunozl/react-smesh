@@ -135,11 +135,11 @@ HeaderListElement.defaultProps = {
 const Logo = () => (
     <div className="logo flex center">
         <div>
-            <h1>S-MESH</h1>
+            <h1>CAMARON WEB</h1>
             <div className="autogrid center">
                 <button className="modal-trigger" data-modal="modal-about">About</button>
                 <span>|</span>
-                <a href="." target="_blank">GitHub</a>
+                <a href="https://github.com/dmunozl/react-smesh" rel="noopener noreferrer" target="_blank">GitHub</a>
             </div>
         </div>
     </div>
