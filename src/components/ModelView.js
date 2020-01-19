@@ -21,10 +21,11 @@ class ModelView extends React.Component {
         if (!this.gl) {alert("No WebGL");}
     }
 
-    componentWillReceiveProps(nextProps, nextContext) {
-        if((nextProps.status !== this.props.status) && nextProps.status === 'SUCCESS'){
-            const r_model = new RModel(nextProps.model, nextProps.main_renderer, this.gl);
-            const RendererObject = RendererFactory.getRenderer(nextProps.main_renderer);
+    componentDidUpdate(prevProps) {
+        const props = this.props;
+        if((props.status !== prevProps.status) && props.status === 'SUCCESS'){
+            const r_model = new RModel(props.model, props.main_renderer, this.gl);
+            const RendererObject = RendererFactory.getRenderer(props.main_renderer);
             let main_renderer = null;
 
             if (RendererObject) {
@@ -37,9 +38,9 @@ class ModelView extends React.Component {
             });
         }
 
-        if (this.state.r_model && (nextProps.main_renderer !== this.props.main_renderer)) {
-            this.state.r_model.updateRenderType(nextProps.main_renderer);
-            const RendererObject = RendererFactory.getRenderer(nextProps.main_renderer);
+        if (this.state.r_model && (props.main_renderer !== prevProps.main_renderer)) {
+            this.state.r_model.updateRenderType(props.main_renderer);
+            const RendererObject = RendererFactory.getRenderer(props.main_renderer);
             let main_renderer = null;
 
             if (RendererObject) {
