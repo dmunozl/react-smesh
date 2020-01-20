@@ -1,5 +1,6 @@
 import {vec3, mat4} from 'gl-matrix';
 import {degToRad} from "./cgUtils";
+import Rotator from "./Modifiers/Rotator";
 
 export class RModel {
   constructor(model, render_type, gl) {
@@ -39,6 +40,9 @@ export class RModel {
     this.recalculate_MV = true;
     this.recalculate_MVP = true;
     this.setMatrices();
+
+    // ----- MODIFIERS -----
+    this.rotator = new Rotator(gl)
   }
 
   // ----- RModel initial setup methods -----
@@ -104,8 +108,18 @@ export class RModel {
 
   // ----- RModels updaters -----
 
+  updateRotation(){
+    this.rotation_matrix = this.rotator.getRotationMatrix();
+    this.recalculate_MV = true;
+    this.recalculate_MVP = true;
+  };
+
   updateRenderType(new_render_type){
     this.render_type = new_render_type
+  }
+
+  updateAspect() {
+    this.aspect = this.gl.canvas.clientWidth / this.gl.canvas.clientHeight;
   }
 
   toggleProjection(){
@@ -117,16 +131,11 @@ export class RModel {
     this.recalculate_MVP = true;
   }
 
-  updateAspect() {
-    this.aspect = this.gl.canvas.clientWidth / this.gl.canvas.clientHeight;
-  }
-
   rescale() {
     this.updateAspect();
     this.recalculate_MV = true;
     this.recalculate_MVP = true;
   }
-
 
   // ----- RModel necessary getters -----
 

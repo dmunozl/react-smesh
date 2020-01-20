@@ -13,16 +13,17 @@ class ModelView extends React.Component {
             main_renderer: undefined
         };
         this.canvas_ref = React.createRef();
+        this.rotating = false;
     }
 
     componentDidMount() {
         this.canvas = this.canvas_ref.current;
         this.gl = this.canvas.getContext("webgl2");
         if (!this.gl) {alert("No WebGL");}
-        window.addEventListener("resize", this.rescaleModel.bind(this))
+        window.addEventListener("resize", this.rescaleModel.bind(this));
     }
 
-    componentDidUpdate(prevProps) {
+    componentDidUpdate(prevProps, prevState) {
         const props = this.props;
         if((props.status !== prevProps.status) && props.status === 'SUCCESS'){
             const r_model = new RModel(props.model, props.main_renderer, this.gl);
@@ -39,6 +40,32 @@ class ModelView extends React.Component {
             });
         }
 
+        if (this.state.r_model && this.state.r_model !== prevState.r_model) {
+            const rotator = this.state.r_model.rotator;
+            const mousedown = e => {
+                if (e.button === 0) {
+                    this.rotating = true;
+                    rotator.setRotationStart(e.clientX, e.clientY)
+                }
+            };
+
+            const mouseup = e => {
+                this.rotating = false;
+            };
+
+            const mousemove = e => {
+                if(this.rotating){
+                    rotator.rotateTo(e.clientX, e.clientY);
+                    this.state.r_model.updateRotation();
+                    this.draw();
+                }
+            };
+
+            this.canvas.addEventListener('mousedown', mousedown);
+            this.canvas.addEventListener('mouseup', mouseup);
+            this.canvas.addEventListener('mousemove', mousemove);
+        }
+
         if (this.state.r_model && (props.main_renderer !== prevProps.main_renderer)) {
             this.state.r_model.updateRenderType(props.main_renderer);
             const RendererObject = RendererFactory.getRenderer(props.main_renderer);
@@ -51,13 +78,6 @@ class ModelView extends React.Component {
             this.setState({
                 main_renderer
             });
-        }
-    }
-
-    rescaleModel(){
-        if(this.state.r_model){
-            this.state.r_model.rescale();
-            this.forceUpdate();
         }
     }
 
@@ -82,6 +102,13 @@ class ModelView extends React.Component {
 
         if(this.state.main_renderer != null){
             this.state.main_renderer.draw();
+        }
+    }
+
+    rescaleModel(){
+        if(this.state.r_model){
+            this.state.r_model.rescale();
+            this.forceUpdate();
         }
     }
 
