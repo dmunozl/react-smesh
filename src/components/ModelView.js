@@ -19,6 +19,7 @@ class ModelView extends React.Component {
         this.canvas = this.canvas_ref.current;
         this.gl = this.canvas.getContext("webgl2");
         if (!this.gl) {alert("No WebGL");}
+        window.addEventListener("resize", this.rescaleModel.bind(this))
     }
 
     componentDidUpdate(prevProps) {
@@ -50,6 +51,13 @@ class ModelView extends React.Component {
             this.setState({
                 main_renderer
             });
+        }
+    }
+
+    rescaleModel(){
+        if(this.state.r_model){
+            this.state.r_model.rescale();
+            this.forceUpdate();
         }
     }
 
@@ -91,8 +99,9 @@ class ModelView extends React.Component {
     }
 
     render(){
-        if (this.canvas && this.gl)
+        if (this.canvas && this.gl) {
             this.draw();
+        }
 
         return <div className='model-view'>
             <canvas ref={this.canvas_ref}/>

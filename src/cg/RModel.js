@@ -117,6 +117,17 @@ export class RModel {
     this.recalculate_MVP = true;
   }
 
+  updateAspect() {
+    this.aspect = this.gl.canvas.clientWidth / this.gl.canvas.clientHeight;
+  }
+
+  rescale() {
+    this.updateAspect();
+    this.recalculate_MV = true;
+    this.recalculate_MVP = true;
+  }
+
+
   // ----- RModel necessary getters -----
 
   getModelMatrix() {
