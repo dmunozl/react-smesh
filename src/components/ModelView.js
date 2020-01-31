@@ -14,6 +14,7 @@ class ModelView extends React.Component {
         };
         this.canvas_ref = React.createRef();
         this.rotating = false;
+        this.moving = false;
     }
 
     componentDidMount() {
@@ -42,25 +43,36 @@ class ModelView extends React.Component {
 
         if (this.state.r_model && this.state.r_model !== prevState.r_model) {
             const rotator = this.state.r_model.rotator;
+            const translator = this.state.r_model.translator;
             const mousedown = e => {
                 if (e.button === 0) {
                     this.rotating = true;
                     rotator.setRotationStart(e.clientX, e.clientY)
+                } else if (e.button === 2) {
+                    this.moving = true;
+                    translator.setMovementStart(e.clientX, e.clientY)
                 }
             };
 
             const mouseup = e => {
                 this.rotating = false;
+                this.moving = false;
             };
 
             const mousemove = e => {
-                if(this.rotating){
+                if (this.rotating) {
                     rotator.rotateTo(e.clientX, e.clientY);
                     this.state.r_model.updateRotation();
                     this.draw();
                 }
-            };
 
+                if (this.moving) {
+                    translator.moveTo(e.clientX, e.clientY);
+                    this.state.r_model.updateTranslation();
+                    this.draw();
+                }
+            };
+            this.canvas.addEventListener("contextmenu", e => e.preventDefault());
             this.canvas.addEventListener('mousedown', mousedown);
             this.canvas.addEventListener('mouseup', mouseup);
             this.canvas.addEventListener('mousemove', mousemove);

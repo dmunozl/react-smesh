@@ -1,6 +1,7 @@
 import {vec3, mat4} from 'gl-matrix';
 import {degToRad} from "./cgUtils";
 import Rotator from "./Modifiers/Rotator";
+import Translator from "./Modifiers/Translator";
 
 export class RModel {
   constructor(model, render_type, gl) {
@@ -42,7 +43,8 @@ export class RModel {
     this.setMatrices();
 
     // ----- MODIFIERS -----
-    this.rotator = new Rotator(gl)
+    this.rotator = new Rotator(gl);
+    this.translator = new Translator();
   }
 
   // ----- RModel initial setup methods -----
@@ -113,6 +115,17 @@ export class RModel {
     this.recalculate_MV = true;
     this.recalculate_MVP = true;
   };
+
+  updateTranslation(){
+    const translation_vector = this.translator.getMovementVector();
+    const x_factor = this.model_width/500;
+    const y_factor = this.model_height/500;
+
+    this.translation[0] = -translation_vector[0]*x_factor;
+    this.translation[1] = translation_vector[1]*y_factor;
+    this.recalculate_MV = true;
+    this.recalculate_MVP = true;
+  }
 
   updateRenderType(new_render_type){
     this.render_type = new_render_type
